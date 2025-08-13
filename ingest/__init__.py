@@ -1,9 +1,13 @@
+"""Finmail Ingest Function for Azure Functions."""
+
 import json
+
 import azure.functions as func
 
-from shared_code.finmail.models import EmailPayload
+from finmail.models import EmailPayload
 
-def main(req: func.HttpRequest) -> func.HttpResponse:
+
+def main(req: func.HttpRequest) -> func.HttpResponse:  # noqa: D103
     try:
         data = req.get_json()
     except Exception:
