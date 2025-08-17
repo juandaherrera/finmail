@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [dependency-groups]
 dev = [
-  "mypy>=1.17.1",
   "pytest>=8.4.1",
+  "pytest-cov>=6.2.1",
   "ruff>=0.12.8"
 ]
 
@@ -20,18 +20,28 @@ authors = [
 requires-python = ">=3.12"
 dependencies = [
   "azure-functions>=1.23.0",
+  "beautifulsoup4>=4.13.4",
+  "email-validator>=2.2.0",
+  "lxml>=6.0.0",
   "pydantic>=2.11.7",
-  "pydantic-settings>=2.10.1"
+  "pydantic-settings>=2.10.1",
+  "python-dateutil>=2.9.0.post0"
 ]
+
+[tool.coverage.run]
+omit = ["tests/*"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["shared_code/finmail"]
 
-[tool.mypy]
-python_version = "3.12"
-mypy_path = ["shared_code"]
-explicit_package_bases = true
-packages = ["finmail"]
+[tool.pytest.ini_options]
+addopts = """
+  --cov .
+  --cov-report xml:coverage.xml
+  --cov-report term
+  --cov-report term-missing
+  --cov-fail-under 70
+"""
 
 [tool.ruff]
 line-length = 88
@@ -39,7 +49,7 @@ indent-width = 4
 target-version = "py311"
 include = ["shared_code/*", "ingest/*", "tests/*"]
 preview = true
-exclude = ["*.json", "py.typed"]
+exclude = ["*.json", "py.typed", "*.html"]
 
 [tool.ruff.format]
 docstring-code-format = true
@@ -78,3 +88,10 @@ ignore = [
 
 [tool.ruff.lint.isort]
 known-first-party = ["finmail"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**.py" = [
+  "D", # docstrings
+  "S101", # Asserts
+  "PLR2004" # Magic value comparison
+]

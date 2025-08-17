@@ -14,8 +14,8 @@ ruff:
 	ruff check --fix
 	ruff format
 
-mypy:
-	mypy --config-file=pyproject.toml .
+test:
+	pytest
 
 pre-commit:
 	pre-commit run -a --hook-stage manual $(hook)

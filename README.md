@@ -25,6 +25,27 @@ To get started with Finmail you need to have installed [UV](https://docs.astral.
     make start
     ```
 
+### Send Test Requests
+
+You can use tools like `jq` or `curl` to send test requests to the Azure Functions endpoint. For example:
+
+```bash
+brew install jq
+```
+
+In this case `jq` is used to format the JSON payload for the request. You can use the following command to send a test email payload:
+```bash
+jq -n \
+  --arg subject "RappiCard - Resumen de transacción" \
+  --arg sender "rappi.nreply@rappi.com" \
+  --rawfile html tests/html_samples/rappicard.html \
+  '{subject:$subject, sender:$sender, html:$html}' \
+| curl -sS -X POST http://localhost:7071/api/ingest \
+    -H "Content-Type: application/json" \
+    -d @-
+
+```
+
 ## Contributing
 
 Contributions are welcome! Please open an issue or submit a pull request.
