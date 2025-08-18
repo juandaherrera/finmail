@@ -12,7 +12,7 @@ dev = [
 [project]
 name = "finmail"
 version = "0.1.0"
-description = "Add your description here"
+description = "Finmail is a financial email processing system built with Azure Functions. It processes transactional emails, extracts the relevant financial data, and uploads it to a Google Sheet."
 readme = "README.md"
 authors = [
   {name = "Juan David Herrera", email = "juandaherreparra@gmail.com"}
@@ -25,7 +25,8 @@ dependencies = [
   "lxml>=6.0.0",
   "pydantic>=2.11.7",
   "pydantic-settings>=2.10.1",
-  "python-dateutil>=2.9.0.post0"
+  "python-dateutil>=2.9.0.post0",
+  "toml>=0.10.2"
 ]
 
 [tool.coverage.run]
@@ -87,6 +88,10 @@ ignore = [
   "D413", # new-line-after-last-paragraph
   "TD003" # missing-todo-link
 ]
+extend-select = ["TID"]
+
+[tool.ruff.lint.flake8-tidy-imports.banned-api]
+"finmail".msg = "Do not import 'finmail' directly; use 'shared_code.finmail'."
 
 [tool.ruff.lint.isort]
 known-first-party = ["finmail"]

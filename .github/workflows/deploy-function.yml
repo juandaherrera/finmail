@@ -51,7 +51,7 @@ jobs:
       # Optional: Add step to run tests here
 
       - name: Zip artifact for deployment
-        run: zip -r release.zip host.json requirements.txt ingest shared_code .python_packages -x '*/__pycache__/*'
+        run: zip -r release.zip host.json requirements.txt ingest shared_code .python_packages pyproject.toml -x '*/__pycache__/*'
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4

@@ -1,4 +1,4 @@
-"""Parser Utilities."""
+"""Text Utilities."""
 
 import re
 import unicodedata

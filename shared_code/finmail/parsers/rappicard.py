@@ -5,7 +5,7 @@ from dateutil import tz
 
 from shared_code.finmail.config import settings
 from shared_code.finmail.models import Transaction
-from shared_code.finmail.parsers.utils import normalize
+from shared_code.finmail.utils.text import normalize
 
 TZ = tz.gettz(settings.DEFAULT_TZ)
 
@@ -111,7 +111,7 @@ class RappiCardParser:
             (-float(amount.replace("$", "").replace(".", "").strip())) if amount else 0
         )
 
-        description = f"Purchase at {merchant}. {settings.SERVICE_SIGNATURE}."
+        description = f"Purchase at {merchant}. {settings.service_signature}."
 
         return Transaction(
             pocket="RappiCard",
