@@ -1,0 +1,36 @@
+name: Run unit-tests
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+      - name: Setup UV
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "0.6.3"
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: "pyproject.toml"
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${Python_ROOT_DIR}
+          key: venv-${{ hashFiles('uv.lock') }}
+      - name: Install the project dependencies
+        run: make install
+        env:
+          UV_PROJECT_ENVIRONMENT: ${{ env.Python_ROOT_DIR }}
+      - name: Freeze
+        run: pip freeze
+      - name: Run tests
+        run: make test

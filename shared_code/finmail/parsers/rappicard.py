@@ -3,9 +3,9 @@
 from bs4 import BeautifulSoup
 from dateutil import tz
 
-from finmail.config import settings
-from finmail.models import Transaction
-from finmail.parsers.utils import normalize
+from shared_code.finmail.config import settings
+from shared_code.finmail.models import Transaction
+from shared_code.finmail.parsers.utils import normalize
 
 TZ = tz.gettz(settings.DEFAULT_TZ)
 

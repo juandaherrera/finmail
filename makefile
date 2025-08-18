@@ -5,7 +5,9 @@ clean:
 
 install:
 	uv sync --all-extras
-	uv export -o requirements.txt
+
+export_requirements:
+	uv export -o requirements.txt --no-dev --no-hashes
 
 start:
 	func start

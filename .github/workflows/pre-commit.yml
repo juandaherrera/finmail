@@ -1,0 +1,24 @@
+---
+name: Run pre-commit
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  precommit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: ".python-version"
+      - name: Run pre commits
+        uses: pre-commit/action@v3.0.1
+        with:
+          extra_args: --all-files

@@ -2,7 +2,7 @@
 
 from typing import Protocol
 
-from finmail.models import Transaction
+from shared_code.finmail.models import Transaction
 
 
 class Parser(Protocol):

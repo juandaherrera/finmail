@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from finmail.parsers.rappicard import RappiCardParser
+from shared_code.finmail.parsers.rappicard import RappiCardParser
 
 
 def test_rappicard_parse_fixture():

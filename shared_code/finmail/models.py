@@ -4,7 +4,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, EmailStr, Field
 
-from finmail.config import settings
+from shared_code.finmail.config import settings
 
 
 class Transaction(BaseModel):

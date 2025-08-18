@@ -2,8 +2,8 @@
 
 import logging
 
-from finmail.models import EmailPayload, Transaction
-from finmail.parsers import PARSERS
+from shared_code.finmail.models import EmailPayload, Transaction
+from shared_code.finmail.parsers import PARSERS
 
 logger = logging.getLogger(__name__)
 
