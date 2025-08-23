@@ -1,18 +1,17 @@
-from pathlib import Path
+import pytest
+from bs4 import BeautifulSoup
 
 from shared_code.finmail.parsers.rappicard import RappiCardParser
 
 
-def test_rappicard_parse_fixture():
-    html = Path("tests/html_samples/rappicard.html").read_text(encoding="utf-8")
+@pytest.mark.parametrize(
+    "sender", ["rappi.nreply@rappi.com", "other@rappi.com", "other@gmail.com"]
+)
+def test_rappicard_parser(rappicard_soup: BeautifulSoup, sender: str):
     p = RappiCardParser()
-    assert p.matches(
-        "rappi.nreply@rappi.com", "RappiCard - Resumen de transacción", html, None
-    )
+    assert p.matches(sender, "RappiCard - Resumen de transacción", rappicard_soup)
 
-    tx = p.parse(
-        "rappi.nreply@rappi.com", "RappiCard - Resumen de transacción", html, None
-    )
+    tx = p.parse(sender, "RappiCard - Resumen de transacción", rappicard_soup)
 
     assert tx.pocket == "RappiCard"
     assert round(tx.amount, 2) == -33000.00

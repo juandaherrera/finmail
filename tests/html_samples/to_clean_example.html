@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Clean HTML test</title>
+
+    <!-- Should be removed -->
+    <style>
+        body {
+            color: red;
+        }
+
+        #hidden {
+            display: none;
+        }
+    </style>
+
+    <!-- Should be removed -->
+    <script>
+        console.log("head inline script");
+    </script>
+
+    <!-- Should be removed -->
+    <noscript>Please enable JavaScript to view this content.</noscript>
+</head>
+
+<body>
+    <h1>Invoice</h1>
+    <p id="keep">This text should stay.</p>
+
+    <div id="ads">
+        <!-- Should be removed -->
+        <script src="https://example.com/ads.js"></script>
+
+        <!-- Should be removed -->
+        <noscript><img src="tracking.gif" width="1" height="1" /></noscript>
+    </div>
+
+    <!-- Should be removed -->
+    <style>
+        .ad {
+            display: none;
+        }
+    </style>
+
+    <!-- Should be removed -->
+    <script>console.log("body inline script");</script>
+
+    <!-- Uppercase versions: should also be removed -->
+    <STYLE>
+        .caps {
+            font-weight: bold;
+        }
+    </STYLE>
+    <SCRIPT>console.log("caps script");</SCRIPT>
+    <NOSCRIPT>Alternate content</NOSCRIPT>
+
+    <footer>
+        <p>End of page</p>
+    </footer>
+</body>
+
+</html>

@@ -2,9 +2,11 @@
 
 from datetime import datetime
 
+from bs4 import BeautifulSoup
 from pydantic import BaseModel, EmailStr, Field
 
 from shared_code.finmail.config import settings
+from shared_code.finmail.utils.html import clean_html
 
 
 class Transaction(BaseModel):
@@ -57,6 +59,22 @@ class EmailPayload(BaseModel):
         description="The sender of the email", examples=["nreply@bank.com"]
     )
     html: str | None = Field(default=None, description="The HTML content of the email")
-    text: str | None = Field(
-        default=None, description="The plain text content of the email"
-    )
+
+    # TODO @juandaherrera: define if this should be here
+    def get_soup(self) -> BeautifulSoup:
+        """
+        Return a cleaned HTML representation of the object's HTML content.
+
+        This computed property uses BeautifulSoup to parse the HTML stored in the
+        `html` attribute, then applies the `clean_html` function to sanitize the
+        parsed content. If the `html` attribute is None or empty, an empty string
+        is parsed and cleaned.
+
+        Returns
+        -------
+        BeautifulSoup
+            The cleaned HTML content as a string.
+        """
+        soup = BeautifulSoup(self.html or "", "lxml")
+        clean_html(soup=soup)
+        return soup

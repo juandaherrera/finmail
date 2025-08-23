@@ -1,21 +1,21 @@
 """Finmail Parser Base Module."""
 
-from typing import Protocol
+from abc import ABC, abstractmethod
+
+from bs4 import BeautifulSoup
 
 from shared_code.finmail.models import Transaction
 
 
-class Parser(Protocol):
-    """Protocol for Finmail parsers."""
+class Parser(ABC):
+    """Base class for Finmail parsers."""
 
-    def matches(
-        self, sender: str, subject: str, html: str | None, text: str | None
-    ) -> bool:
+    @abstractmethod
+    def matches(self, sender: str, subject: str, soup: BeautifulSoup) -> bool:
         """Check if the parser can handle the given email."""
         ...
 
-    def parse(
-        self, sender: str, subject: str, html: str | None, text: str | None
-    ) -> Transaction:
+    @abstractmethod
+    def parse(self, sender: str, subject: str, soup: BeautifulSoup) -> Transaction:
         """Parse the email and extract the relevant information."""
         ...

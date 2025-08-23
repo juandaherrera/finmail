@@ -1,10 +1,14 @@
 """RappiCard Parser."""
 
+from typing import ClassVar
+
 from bs4 import BeautifulSoup
 from dateutil import tz
 
 from shared_code.finmail.config import settings
 from shared_code.finmail.models import Transaction
+from shared_code.finmail.parsers.base import Parser
+from shared_code.finmail.utils.html import extract_subject
 from shared_code.finmail.utils.text import normalize
 
 TZ = tz.gettz(settings.DEFAULT_TZ)
@@ -35,18 +39,13 @@ def _find_value_by_label(soup: BeautifulSoup, label_variants: list[str]) -> str 
     return None
 
 
-class RappiCardParser:
+class RappiCardParser(Parser):
     """Parser for RappiCard emails."""
 
-    DOMAINS = ("rappi.nreply@rappi.com",)
+    DOMAINS: ClassVar[tuple[str, ...]] = ("rappi.nreply@rappi.com",)
+    CURRENCY: ClassVar[str] = "COP"
 
-    def matches(
-        self,
-        sender: str,
-        subject: str,
-        html: str | None,  # noqa: ARG002
-        text: str | None,  # noqa: ARG002
-    ) -> bool:
+    def matches(self, sender: str, subject: str, soup: BeautifulSoup) -> bool:
         """
         Determine if the given email matches criteria for RappiCard emails.
 
@@ -56,27 +55,27 @@ class RappiCardParser:
             The email address of the sender.
         subject : str
             The subject line of the email.
-        html : str or None
-            The HTML content of the email (unused).
-        text : str or None
-            The plain text content of the email (unused).
+        soup : BeautifulSoup
+            The parsed HTML content of the email.
 
         Returns
         -------
         bool
-            True if the sender is in the allowed domains or if "rappicard" is present in
-                the subject, False otherwise.
+            True if the email is identified as a RappiCard email, False otherwise.
         """
         sender = (sender or "").lower()
         subject = (subject or "").lower()
-        return (sender in self.DOMAINS) or "rappicard" in subject
+        fwd_subject = normalize(extract_subject(soup))
+        return (sender in self.DOMAINS) or (
+            "rappicard" in subject
+            and ("rappicard" in fwd_subject and "resumen de transaccion" in fwd_subject)
+        )
 
-    @staticmethod
     def parse(
-        sender: str,  # noqa: ARG004
-        subject: str,  # noqa: ARG004
-        html: str | None,
-        text: str | None,  # noqa: ARG004
+        self,
+        sender: str,  # noqa: ARG002
+        subject: str,  # noqa: ARG002
+        soup: BeautifulSoup,
     ) -> Transaction:
         """
         Parse a RappiCard transaction email and extracts relevant details.
@@ -87,21 +86,14 @@ class RappiCardParser:
             The sender's email address. (Unused)
         subject : str
             The subject of the email, used as a fallback for description.
-        html : str or None
-            The HTML content of the email to parse for transaction details.
-        text : str or None
-            The plain text content of the email. (Unused)
+        soup : BeautifulSoup
+            The parsed HTML content of the email to parse for transaction details.
 
         Returns
         -------
         Transaction
             A Transaction object populated with extracted details from the email.
         """
-        soup = BeautifulSoup(html or "", "lxml")
-
-        for tag in soup(["script", "style", "noscript"]):
-            tag.decompose()
-
         last4 = _find_value_by_label(soup, LABELS["account_last4"])
         amount = _find_value_by_label(soup, LABELS["amount"])
         date_str = _find_value_by_label(soup, LABELS["date_local"])
@@ -114,10 +106,11 @@ class RappiCardParser:
         description = f"Purchase at {merchant}. {settings.service_signature}."
 
         return Transaction(
+            # TODO @juandaherrera: maybe this could be done more general
             pocket="RappiCard",
             date_local=" ".join(date_str.split()) if date_str else None,
             amount=amount_float,
-            currency="COP",
+            currency=self.CURRENCY,
             merchant=merchant,
             account_last4=last4.replace("*", "").strip() if last4 else None,
             auth_code=_find_value_by_label(soup, LABELS["auth_code"]),
