@@ -1,0 +1,1 @@
+"""Finmail Core Module."""

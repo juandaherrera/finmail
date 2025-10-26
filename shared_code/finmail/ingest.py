@@ -4,6 +4,8 @@ import logging
 
 from bs4 import BeautifulSoup
 
+from shared_code.finmail.clients import GoogleSheetsClient
+from shared_code.finmail.config import settings
 from shared_code.finmail.models import EmailPayload, Transaction
 from shared_code.finmail.parsers import PARSERS, Parser
 
@@ -39,7 +41,9 @@ def detect_parser(sender: str, subject: str, soup: BeautifulSoup) -> Parser | No
     return None
 
 
-def process_email(payload: EmailPayload) -> Transaction | None:
+def process_email(
+    payload: EmailPayload, google_sheets_client: GoogleSheetsClient
+) -> Transaction | None:
     """Process an incoming email and extracts relevant information."""  # noqa: DOC201
     soup = payload.get_soup()
     parser = detect_parser(
@@ -50,8 +54,16 @@ def process_email(payload: EmailPayload) -> Transaction | None:
     if not parser:
         return None
 
-    return parser.parse(
+    transaction = parser.parse(
         sender=payload.sender,
         subject=payload.subject,
         soup=soup,
     )
+
+    google_sheets_client.insert_transaction(
+        spreadsheet_identifier=settings.GOOGLE_SPREADSHEET_IDENTIFIER,
+        worksheet_name=settings.GOOGLE_WORKSHEET_NAME,
+        transaction=transaction,
+    )
+
+    return transaction

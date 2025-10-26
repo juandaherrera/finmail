@@ -12,7 +12,7 @@ requirements.txt
 .venv
 
 # IDE-specific files
-.vscode/
+
 .idea/
 
 # Environment variables
@@ -35,3 +35,11 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 cover/
+
+# VS Code settings
+.vscode/
+
+# Azure Functions specific
+local.settings.json
+.python_packages
+.funcignore

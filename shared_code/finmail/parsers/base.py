@@ -1,6 +1,7 @@
 """Finmail Parser Base Module."""
 
 from abc import ABC, abstractmethod
+from typing import ClassVar
 
 from bs4 import BeautifulSoup
 
@@ -9,6 +10,9 @@ from shared_code.finmail.models import Transaction
 
 class Parser(ABC):
     """Base class for Finmail parsers."""
+
+    DOMAINS: ClassVar[tuple[str, ...]]
+    CURRENCY: ClassVar[str]
 
     @abstractmethod
     def matches(self, sender: str, subject: str, soup: BeautifulSoup) -> bool:

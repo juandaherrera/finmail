@@ -4,6 +4,7 @@ import json
 
 import azure.functions as func
 
+from shared_code.finmail.core.google_client import google_sheets_client
 from shared_code.finmail.ingest import process_email
 from shared_code.finmail.models import EmailPayload
 
@@ -19,7 +20,9 @@ def main(req: func.HttpRequest) -> func.HttpResponse:  # noqa: D103
     except Exception as e:
         return func.HttpResponse(f"Validation error: {e}", status_code=422)
 
-    processed = process_email(payload)
+    processed = process_email(
+        payload=payload, google_sheets_client=google_sheets_client
+    )
 
     return func.HttpResponse(
         json.dumps({
