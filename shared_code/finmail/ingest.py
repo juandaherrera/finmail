@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 from shared_code.finmail.clients import GoogleSheetsClient
 from shared_code.finmail.config import settings
 from shared_code.finmail.models import EmailPayload, Transaction
-from shared_code.finmail.parsers import PARSERS, Parser
+from shared_code.finmail.parsers import Parser, get_registry
 
 logger = logging.getLogger(__name__)
 
@@ -30,13 +30,16 @@ def detect_parser(sender: str, subject: str, soup: BeautifulSoup) -> Parser | No
     Parser or None
         The matching parser object if found, otherwise None.
     """
-    for p in PARSERS:
+    parsers = get_registry()
+    for p in parsers:
         if p.matches(sender, subject, soup):
             return p
     logger.warning(
-        "No suitable parser found for email from %s with subject %s",
+        "No suitable parser found for email from %s with subject %s."
+        "Available parsers: %s",
         sender,
         subject,
+        [type(p).__name__ for p in parsers],
     )
     return None
 

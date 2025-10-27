@@ -1,0 +1,37 @@
+---
+name: Create Tag from pyproject.toml Version
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  create_tag:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Extract version from pyproject.toml
+        id: extract_version
+        run: >
+          VERSION=$(grep "^version" pyproject.toml | sed -E 's/.*"([^"]+)".*/\1/')
+
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+      - name: Check if tag exists
+        run: |
+          git fetch --tags
+          if git rev-parse "$VERSION^{tag}" >/dev/null 2>&1
+          then
+          echo "Version $VERSION already exists as a tag"
+          exit 1
+          fi
+          echo "Version $VERSION does not exist as a tag"
+      - name: Create tag
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git tag "$VERSION"
+          git push origin "$VERSION"

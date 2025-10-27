@@ -2,7 +2,6 @@
 
 from .base import Parser
 from .rappicard import RappiCardParser
+from .registry import get_registry
 
-PARSERS: list[Parser] = [RappiCardParser()]
-
-__all__ = ["PARSERS", "Parser"]
+__all__ = ["Parser", "RappiCardParser", "get_registry"]

@@ -8,6 +8,7 @@ from dateutil import tz
 from shared_code.finmail.config import settings
 from shared_code.finmail.models import Transaction
 from shared_code.finmail.parsers.base import Parser
+from shared_code.finmail.parsers.registry import register_parser
 from shared_code.finmail.utils.html import extract_subject
 from shared_code.finmail.utils.text import normalize
 
@@ -39,6 +40,7 @@ def _find_value_by_label(soup: BeautifulSoup, label_variants: list[str]) -> str 
     return None
 
 
+@register_parser()
 class RappiCardParser(Parser):
     """Parser for RappiCard emails."""
 

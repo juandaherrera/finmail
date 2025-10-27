@@ -6,7 +6,27 @@ import azure.functions as func
 
 from shared_code.finmail.core.google_client import google_sheets_client
 from shared_code.finmail.ingest import process_email
-from shared_code.finmail.models import EmailPayload
+from shared_code.finmail.models import EmailPayload, Transaction
+
+
+def _get_response(
+    transaction: Transaction | None, payload: EmailPayload
+) -> func.HttpResponse:
+    if transaction:
+        return func.HttpResponse(
+            json.dumps({
+                "ok": True,
+                "subject": payload.subject,
+                "processed": transaction.model_dump(mode="json"),
+            }),
+            mimetype="application/json",
+            status_code=200,
+        )
+    return func.HttpResponse(
+        json.dumps({"ok": False, "subject": payload.subject, "processed": None}),
+        mimetype="application/json",
+        status_code=200,
+    )
 
 
 def main(req: func.HttpRequest) -> func.HttpResponse:  # noqa: D103
@@ -24,12 +44,4 @@ def main(req: func.HttpRequest) -> func.HttpResponse:  # noqa: D103
         payload=payload, google_sheets_client=google_sheets_client
     )
 
-    return func.HttpResponse(
-        json.dumps({
-            "ok": True,
-            "subject": payload.subject,
-            "processed": processed.model_dump(mode="json") if processed else "",
-        }),
-        mimetype="application/json",
-        status_code=200,
-    )
+    return _get_response(transaction=processed, payload=payload)
