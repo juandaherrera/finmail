@@ -19,3 +19,17 @@ def test_rappicard_parser(rappicard_soup: BeautifulSoup, sender: str):
     assert tx.account_last4 == "1234"
     assert tx.auth_code == "123456"
     assert "BELLEZA Y ESTILO" in (tx.merchant or "")
+
+
+def test_rappicard_parser_decimal(rappicard_decimal_soup: BeautifulSoup):
+    p = RappiCardParser()
+    sender = "rappi.nreply@rappi.com"
+    assert p.matches(
+        sender, "RappiCard - Resumen de transacción", rappicard_decimal_soup
+    )
+    tx = p.parse(sender, "RappiCard - Resumen de transacción", rappicard_decimal_soup)
+    assert round(tx.amount, 2) == -1171806.70
+    assert tx.currency == "COP"
+    assert tx.account_last4 == "1234"
+    assert tx.auth_code == "123456"
+    assert "BELLEZA Y ESTILO" in (tx.merchant or "")

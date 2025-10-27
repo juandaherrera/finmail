@@ -18,3 +18,11 @@ def fixture_rappicard_soup() -> BeautifulSoup:
     soup = BeautifulSoup(html, "lxml")
     clean_html(soup)
     return soup
+
+
+@pytest.fixture(scope="session", name="rappicard_decimal_soup")
+def fixture_rappicard_decimal_soup() -> BeautifulSoup:
+    html = Path("tests/html_samples/rappicard_decimal.html").read_text(encoding="utf-8")
+    soup = BeautifulSoup(html, "lxml")
+    clean_html(soup)
+    return soup

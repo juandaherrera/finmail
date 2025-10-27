@@ -21,10 +21,12 @@ def register_parser():
     ... class MyParser(Parser):
     ...     pass
     """
+
     def decorator(cls: type[Parser]) -> type[Parser]:
         instance = cls()
         _registry.append(instance)
         return cls
+
     return decorator
 
 

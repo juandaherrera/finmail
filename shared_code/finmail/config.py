@@ -1,4 +1,5 @@
 """Finmail Configuration Module."""
+
 import json
 
 from pydantic import computed_field, field_validator
@@ -30,7 +31,7 @@ class Settings(BaseSettings):
     def validate_google_json_key(cls, value: dict | None) -> dict | None:  # noqa: D102
         if isinstance(value, str):
             try:
-                value = value.replace('\n', '\\n')
+                value = value.replace("\n", "\\n")
                 return json.loads(value)
             except json.JSONDecodeError as e:
                 raise ValueError(f"GOOGLE_JSON_KEY must be valid JSON: {value}") from e

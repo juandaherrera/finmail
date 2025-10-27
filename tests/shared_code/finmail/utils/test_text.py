@@ -20,7 +20,7 @@ from shared_code.finmail.utils.text import normalize
         ("123", "123"),
         ("!@# $%^", "!@# $%^"),
         ("naïve façade", "naive facade"),
-    ]
+    ],
 )
 def test_normalize(input_str: str | None, expected: str | None):
     assert normalize(input_str) == expected

@@ -12,7 +12,7 @@ dev = [
 
 [project]
 name = "finmail"
-version = "1.0.0"
+version = "1.0.1"
 description = "Finmail is a financial email processing system built with Azure Functions. It processes transactional emails, extracts the relevant financial data, and uploads it to a Google Sheet."
 readme = "README.md"
 authors = [
@@ -28,7 +28,7 @@ dependencies = [
   "pydantic>=2.11.7",
   "pydantic-settings>=2.10.1",
   "python-dateutil>=2.9.0.post0",
-  "toml>=0.10.2",
+  "toml>=0.10.2"
 ]
 
 [tool.coverage.run]
@@ -49,7 +49,7 @@ addopts = """
 """ # TODO @juandaherrera increase coverage threshold
 env = [
   'GOOGLE_JSON_KEY={{"key": "value"}}',
-  "GOOGLE_SPREADSHEET_IDENTIFIER=test_spreadsheet_identifierS",
+  "GOOGLE_SPREADSHEET_IDENTIFIER=test_spreadsheet_identifierS"
 ]
 
 [tool.ruff]
