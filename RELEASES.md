@@ -1,4 +1,9 @@
-# Upcoming Release 1.1.0
+# Upcoming Release 1.2.0
+## Major features and improvements
+
+## Bug fixes and other changes
+
+# 1.1.0
 ## Major features and improvements
 * Folder structure reorganization:
   * Moved configuration settings to `core/config.py`.
