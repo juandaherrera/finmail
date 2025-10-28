@@ -1,7 +1,9 @@
 # Upcoming Release 1.2.0
 ## Major features and improvements
+* Added RemotePass parser to handle transaction emails from RemotePass.
 
 ## Bug fixes and other changes
+* Updated test coverage threshold from 50% to 60%.
 
 # 1.1.1
 ## Bug fixes and other changes

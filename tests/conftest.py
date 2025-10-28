@@ -26,3 +26,11 @@ def fixture_rappicard_decimal_soup() -> BeautifulSoup:
     soup = BeautifulSoup(html, "lxml")
     clean_html(soup)
     return soup
+
+
+@pytest.fixture(scope="session", name="remotepass_soup")
+def fixture_remotepass_soup() -> BeautifulSoup:
+    html = Path("tests/html_samples/remotepass.html").read_text(encoding="utf-8")
+    soup = BeautifulSoup(html, "lxml")
+    clean_html(soup)
+    return soup
