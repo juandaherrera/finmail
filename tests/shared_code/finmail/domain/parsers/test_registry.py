@@ -1,6 +1,6 @@
 import pytest
 
-from shared_code.finmail.parsers import Parser, registry
+from shared_code.finmail.domain.parsers import Parser, registry
 
 
 @pytest.fixture(autouse=True)

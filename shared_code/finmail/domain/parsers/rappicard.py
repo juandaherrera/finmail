@@ -6,12 +6,12 @@ from typing import ClassVar
 from bs4 import BeautifulSoup
 from dateutil import tz
 
-from shared_code.finmail.config import settings
+from shared_code.finmail.core.config import settings
+from shared_code.finmail.domain.parsers.base import Parser
+from shared_code.finmail.domain.parsers.registry import register_parser
 from shared_code.finmail.models import Transaction
-from shared_code.finmail.parsers.base import Parser
-from shared_code.finmail.parsers.registry import register_parser
 from shared_code.finmail.utils.html import extract_subject
-from shared_code.finmail.utils.text import normalize
+from shared_code.finmail.utils.text import float_from_string, normalize
 
 logger = logging.getLogger(__name__)
 TZ = tz.gettz(settings.DEFAULT_TZ)
@@ -40,18 +40,6 @@ def _find_value_by_label(soup: BeautifulSoup, label_variants: list[str]) -> str 
             if len(ps) >= 2:  # noqa: PLR2004
                 return ps[1].get_text(strip=True)
     return None
-
-
-def _float_from_cop_string(amount_str: str) -> float | None:
-    try:
-        # Remove currency symbol and whitespace
-        cleaned_str = amount_str.replace("$", "").replace(" ", "").strip()
-        # Remove thousand separators and replace decimal comma with dot
-        cleaned_str = cleaned_str.replace(".", "").replace(",", ".")
-        return float(cleaned_str)
-    except ValueError:
-        logger.error("Failed to convert '%s' to float.", amount_str)
-        return None
 
 
 @register_parser()
@@ -115,7 +103,7 @@ class RappiCardParser(Parser):
         date_str = _find_value_by_label(soup, LABELS["date_local"])
         merchant = _find_value_by_label(soup, LABELS["merchant"])
 
-        amount_float = -_float_from_cop_string(amount) if amount else None
+        amount_float = -float_from_string(amount) if amount else None
 
         description = f"Purchase at {merchant}. {settings.service_signature}."
 

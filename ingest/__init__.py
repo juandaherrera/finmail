@@ -5,7 +5,7 @@ import json
 import azure.functions as func
 
 from shared_code.finmail.core.google_client import google_sheets_client
-from shared_code.finmail.ingest import process_email
+from shared_code.finmail.domain.ingest import process_email
 from shared_code.finmail.models import EmailPayload, Transaction
 
 

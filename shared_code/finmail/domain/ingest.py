@@ -5,9 +5,10 @@ import logging
 from bs4 import BeautifulSoup
 
 from shared_code.finmail.clients import GoogleSheetsClient
-from shared_code.finmail.config import settings
+from shared_code.finmail.core.config import settings
+from shared_code.finmail.domain.parsers.base import Parser
+from shared_code.finmail.domain.parsers.registry import get_registry
 from shared_code.finmail.models import EmailPayload, Transaction
-from shared_code.finmail.parsers import Parser, get_registry
 
 logger = logging.getLogger(__name__)
 

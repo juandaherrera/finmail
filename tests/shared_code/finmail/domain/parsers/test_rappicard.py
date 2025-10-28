@@ -1,7 +1,7 @@
 import pytest
 from bs4 import BeautifulSoup
 
-from shared_code.finmail.parsers.rappicard import RappiCardParser
+from shared_code.finmail.domain.parsers.rappicard import RappiCardParser
 
 
 @pytest.mark.parametrize(

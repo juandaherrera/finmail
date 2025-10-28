@@ -5,7 +5,7 @@ from datetime import datetime
 from bs4 import BeautifulSoup
 from pydantic import BaseModel, EmailStr, Field
 
-from shared_code.finmail.config import settings
+from shared_code.finmail.core.config import settings
 from shared_code.finmail.utils.html import clean_html
 
 

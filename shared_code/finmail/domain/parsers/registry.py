@@ -1,6 +1,6 @@
 """Registry for email parsers."""
 
-from shared_code.finmail.parsers.base import Parser
+from shared_code.finmail.domain.parsers import Parser
 
 _registry: list[Parser] = []
 
