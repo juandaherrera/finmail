@@ -69,7 +69,7 @@ class RappiCardParser(Parser):
         """
         sender = (sender or "").lower()
         subject = (subject or "").lower()
-        fwd_subject = normalize(extract_subject(soup))
+        fwd_subject = normalize(extract_subject(soup)) or subject
         return (sender in self.DOMAINS) or (
             "rappicard" in subject
             and ("rappicard" in fwd_subject and "resumen de transaccion" in fwd_subject)

@@ -8,6 +8,7 @@
   * Updated RappiCard parser to use the new `float_from_string` function for amount parsing
 
 ## Bug fixes and other changes
+* Updated RappiCard parser to handle cases where the forwarded email subject is missing or cannot be normalized.
 
 # 1.0.1
 ## Bug fixes and other changes
