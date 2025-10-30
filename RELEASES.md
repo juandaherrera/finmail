@@ -3,6 +3,11 @@
 
 ## Bug fixes and other changes
 
+# 1.1.1
+## Bug fixes and other changes
+* Added additional domain to RappiCard parser to handle emails from "noreply@rappicard.co".
+
+
 # 1.1.0
 ## Major features and improvements
 * Folder structure reorganization:

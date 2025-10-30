@@ -46,7 +46,10 @@ def _find_value_by_label(soup: BeautifulSoup, label_variants: list[str]) -> str 
 class RappiCardParser(Parser):
     """Parser for RappiCard emails."""
 
-    DOMAINS: ClassVar[tuple[str, ...]] = ("rappi.nreply@rappi.com",)
+    DOMAINS: ClassVar[tuple[str, ...]] = (
+        "rappi.nreply@rappi.com",
+        "noreply@rappicard.co",
+    )
     CURRENCY: ClassVar[str] = "COP"
 
     def matches(self, sender: str, subject: str, soup: BeautifulSoup) -> bool:

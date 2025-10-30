@@ -36,7 +36,7 @@ def detect_parser(sender: str, subject: str, soup: BeautifulSoup) -> Parser | No
         if p.matches(sender, subject, soup):
             return p
     logger.warning(
-        "No suitable parser found for email from %s with subject %s."
+        "No suitable parser found for email from %s with subject %s. "
         "Available parsers: %s",
         sender,
         subject,
