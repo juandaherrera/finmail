@@ -1,4 +1,9 @@
-# Upcoming Release 1.2.0
+# Upcoming Release 1.3.0
+## Major features and improvements
+
+## Bug fixes and other changes
+
+# 1.2.0
 ## Major features and improvements
 * Added RemotePass parser to handle transaction emails from RemotePass.
 
