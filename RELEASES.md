@@ -3,6 +3,10 @@
 
 ## Bug fixes and other changes
 
+# 1.2.1
+## Bug fixes and other changes
+* Changed from `append_row` to `insert_row` in Google Sheets client to ensure new data is added at the bottom of the table instead of the bottom of the sheet.
+
 # 1.2.0
 ## Major features and improvements
 * Added RemotePass parser to handle transaction emails from RemotePass.

@@ -4,6 +4,7 @@ import re
 
 import gspread
 from google.oauth2.service_account import Credentials
+from gspread import Worksheet
 
 from shared_code.finmail.models import Transaction
 
@@ -75,6 +76,27 @@ class GoogleSheetsClient:
             else spreadsheet.sheet1
         )
 
+    @staticmethod
+    def get_last_filled_row(sheet: Worksheet, column: int = 1) -> int:
+        """
+        Get the index of the last filled row in a specified Google Sheets worksheet.
+
+        Parameters
+        ----------
+        sheet : gspread.Worksheet
+            The worksheet object to check for the last filled row.
+        column : int, optional
+            The column number to check for filled rows.
+                Defaults to 1 (the first column).
+
+        Returns
+        -------
+        int
+            The index of the last filled row in the worksheet.
+        """
+        column_values = sheet.col_values(column)
+        return len(column_values)
+
     def append_row(
         self,
         spreadsheet_identifier: str,
@@ -100,7 +122,8 @@ class GoogleSheetsClient:
             True if the row was appended successfully, otherwise False.
         """
         sheet = self.open_sheet(spreadsheet_identifier, worksheet_name)
-        sheet.append_row(row_values)
+        first_empty_row = self.get_last_filled_row(sheet) + 1
+        sheet.insert_row(row_values, index=first_empty_row)
         return True
 
     def read_all(
