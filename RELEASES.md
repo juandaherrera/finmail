@@ -1,7 +1,15 @@
-# Upcoming Release 1.4.0
+# Upcoming Release 1.5.0
 ## Major features and improvements
 
 ## Bug fixes and other changes
+
+# 1.4.0
+## Major features and improvements
+* Added support for PSE transactions and outgoing transfers in RappiPay parser.
+
+## Bug fixes and other changes
+* Moved `test_rappipay` fixtures to `conftest.py` for better reusability across tests.
+* Removed `rappipay` keyword requirement from `RappiPay` parser to allow more flexible email subject matching.
 
 # 1.3.0
 ## Major features and improvements

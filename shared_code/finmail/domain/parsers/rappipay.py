@@ -18,30 +18,97 @@ logger = logging.getLogger(__name__)
 TZ = tz.gettz(settings.DEFAULT_TZ)
 
 LABELS = {
-    "amount": ["monto recibido"],
+    "amount_in": ["monto recibido"],
+    "amount_out": ["monto transferido"],
+    "amount_pse": ["monto"],
     "date": ["fecha de la transacción", "fecha de la transaccion"],
     "time": ["hora de la transacción", "hora de la transaccion"],
     "bank": ["banco"],
+    "destination": ["cuenta destino"],
+    "merchant": ["comercio"],
+    "transaction_type": ["tipo de transacción", "tipo de transaccion"],
+    "transfer_desc": ["descripción", "descripcion"],
 }
 
 
 def _find_value_by_label(soup: BeautifulSoup, label_variants: list[str]) -> str | None:
     variants = {normalize(v) for v in label_variants}
+
     for p in soup.find_all("p"):
-        if normalize(p.get_text()) not in variants:
+        if normalize(p.get_text(strip=True)) not in variants:
             continue
 
         td = p.find_parent("td")
-        tr = td.find_parent("tr") if td else None
-        if not tr:
+        if not td:
             continue
 
-        tds = tr.find_all("td")
-        for i, cell in enumerate(tds):
-            if cell == td and i + 1 < len(tds):
-                return tds[i + 1].get_text(strip=True)
+        value_td = td.find_next_sibling("td")
+        if value_td:
+            return value_td.get_text(strip=True)
 
     return None
+
+
+def _extract_fields(soup: BeautifulSoup) -> dict[str, str | None]:
+    return {
+        key: normalize(_find_value_by_label(soup, labels))
+        for key, labels in LABELS.items()
+    }
+
+
+def _parse_amount(
+    amount_in: str | None,
+    amount_out: str | None,
+    amount_pse: str | None,
+) -> float:
+    if amount_in:
+        return float_from_string(amount_in)
+    if amount_out:
+        return -float_from_string(amount_out)
+    if amount_pse:
+        return -float_from_string(amount_pse)
+    return 0.0
+
+
+def _build_description(
+    transfer_desc: str | None,
+    is_pse: bool,
+    merchant: str | None,
+    bank: str | None,
+    destination: str | None,
+) -> str:
+    parts: list[str] = []
+
+    if transfer_desc:
+        parts.append(transfer_desc.capitalize())
+    elif is_pse:
+        parts.append("Compra PSE")
+    else:
+        parts.append("Transferencia Bancaria")
+
+    if merchant:
+        parts.append(merchant.upper())
+
+    if bank:
+        parts.append("From RappiPay to")
+        parts.append(bank.capitalize())
+
+    if destination:
+        parts.append(f"({destination})")
+
+    description = " ".join(parts)
+    return f"{description}. {settings.service_signature}."
+
+
+def _resolve_merchant(
+    merchant: str | None,
+    bank: str | None,
+) -> str:
+    if merchant:
+        return merchant.upper()
+    if bank:
+        return bank.upper()
+    return "Transferencia Bancaria"
 
 
 @register_parser()
@@ -72,16 +139,15 @@ class RappiPayParser(Parser):
         sender = (sender or "").lower()
         subject = (subject or "").lower()
 
-        # Check sender
-        if any(d in sender for d in self.DOMAINS):
+        if any(domain in sender for domain in self.DOMAINS):
             return True
 
-        # Fallback check on body/subject if sender doesn't match exactly
         fwd_subject = normalize(extract_subject(soup)) or subject
-        if "rappipay" in fwd_subject and "transferencia bancaria" in fwd_subject:
-            return True
+        keywords = ("transferencia bancaria", "compra con pse", "rappipay")
 
-        return False
+        # TODO @juandaherrera: Remove debug logging after verification
+        logger.info("RappiPayParser checking forwarded subject: %s", fwd_subject)
+        return any(keyword in fwd_subject for keyword in keywords)
 
     def parse(
         self,
@@ -106,25 +172,37 @@ class RappiPayParser(Parser):
         Transaction
             The extracted transaction details.
         """
-        amount_str = normalize(_find_value_by_label(soup, LABELS["amount"]))
-        date_str = normalize(_find_value_by_label(soup, LABELS["date"]))
-        time_str = normalize(_find_value_by_label(soup, LABELS["time"]))
-        bank_str = normalize(_find_value_by_label(soup, LABELS["bank"]))
+        fields = _extract_fields(soup)
 
-        amount_float = float_from_string(amount_str) if amount_str else 0.0
+        amount = _parse_amount(
+            fields["amount_in"],
+            fields["amount_out"],
+            fields["amount_pse"],
+        )
 
-        date_local = parse_spanish_datetime_str(date_str, time_str)
+        date_local = parse_spanish_datetime_str(
+            fields["date"],
+            fields["time"],
+        )
 
-        description = "Transferencia Bancaria"
-        if bank_str:
-            description += f" from {bank_str.upper()}"
-        description += f". {settings.service_signature}."
+        description = _build_description(
+            transfer_desc=fields["transfer_desc"],
+            is_pse=bool(fields["amount_pse"]),
+            merchant=fields["merchant"],
+            bank=fields["bank"],
+            destination=fields["destination"],
+        )
+
+        merchant = _resolve_merchant(
+            merchant=fields["merchant"],
+            bank=fields["bank"],
+        )
 
         return Transaction(
-            pocket="RappiPay",
+            pocket="RappiCuenta",
             date_local=date_local,
-            amount=amount_float,
+            amount=amount,
             currency=self.CURRENCY,
-            merchant=bank_str.upper() if bank_str else "Transferencia Bancaria",
+            merchant=merchant,
             description=description,
         )
