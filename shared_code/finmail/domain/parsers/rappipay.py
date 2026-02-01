@@ -17,6 +17,14 @@ from shared_code.finmail.utils.text import float_from_string, normalize
 logger = logging.getLogger(__name__)
 TZ = tz.gettz(settings.DEFAULT_TZ)
 
+MATCH_KEYWORDS = (
+    "transferencia bancaria",
+    "compra con pse",
+    "rappipay",
+    "tu dinero esta en camino",
+    "tu dinero ya esta disponible",
+)
+
 LABELS = {
     "amount_in": ["monto recibido"],
     "amount_out": ["monto transferido"],
@@ -25,6 +33,7 @@ LABELS = {
     "time": ["hora de la transacción", "hora de la transaccion"],
     "bank": ["banco"],
     "destination": ["cuenta destino"],
+    "destination_key": ["llave destino"],
     "merchant": ["comercio"],
     "transaction_type": ["tipo de transacción", "tipo de transaccion"],
     "transfer_desc": ["descripción", "descripcion"],
@@ -70,12 +79,15 @@ def _parse_amount(
     return 0.0
 
 
-def _build_description(
+def _build_description(  # noqa: PLR0913
+    *,
     transfer_desc: str | None,
     is_pse: bool,
     merchant: str | None,
     bank: str | None,
     destination: str | None,
+    destination_key: str | None,
+    is_incoming: bool,
 ) -> str:
     parts: list[str] = []
 
@@ -90,11 +102,17 @@ def _build_description(
         parts.append(merchant.upper())
 
     if bank:
-        parts.append("From RappiPay to")
-        parts.append(bank.capitalize())
+        if is_incoming:
+            parts.append(f"from {bank.capitalize()}")
+        else:
+            parts.append("From RappiPay to")
+            parts.append(bank.capitalize())
 
     if destination:
         parts.append(f"({destination})")
+
+    if destination_key:
+        parts.append(f"({destination_key})")
 
     description = " ".join(parts)
     return f"{description}. {settings.service_signature}."
@@ -143,11 +161,7 @@ class RappiPayParser(Parser):
             return True
 
         fwd_subject = normalize(extract_subject(soup)) or subject
-        keywords = ("transferencia bancaria", "compra con pse", "rappipay")
-
-        # TODO @juandaherrera: Remove debug logging after verification
-        logger.info("RappiPayParser checking forwarded subject: %s", fwd_subject)
-        return any(keyword in fwd_subject for keyword in keywords)
+        return any(keyword in fwd_subject for keyword in MATCH_KEYWORDS)
 
     def parse(
         self,
@@ -191,6 +205,8 @@ class RappiPayParser(Parser):
             merchant=fields["merchant"],
             bank=fields["bank"],
             destination=fields["destination"],
+            destination_key=fields.get("destination_key"),
+            is_incoming=amount > 0,
         )
 
         merchant = _resolve_merchant(

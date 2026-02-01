@@ -64,3 +64,23 @@ def fixture_rappipay_pse_soup() -> BeautifulSoup:
     soup = BeautifulSoup(html, "lxml")
     clean_html(soup)
     return soup
+
+
+@pytest.fixture(scope="session", name="rappipay_llave_transfer_in_soup")
+def fixture_rappipay_llave_transfer_in_soup() -> BeautifulSoup:
+    html = Path("tests/html_samples/rappipay_llave_transfer_in.html").read_text(
+        encoding="utf-8"
+    )
+    soup = BeautifulSoup(html, "lxml")
+    clean_html(soup)
+    return soup
+
+
+@pytest.fixture(scope="session", name="rappipay_llave_transfer_out_soup")
+def fixture_rappipay_llave_transfer_out_soup() -> BeautifulSoup:
+    html = Path("tests/html_samples/rappipay_llave_transfer_out.html").read_text(
+        encoding="utf-8"
+    )
+    soup = BeautifulSoup(html, "lxml")
+    clean_html(soup)
+    return soup

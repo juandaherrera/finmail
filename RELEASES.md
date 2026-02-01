@@ -1,7 +1,11 @@
-# Upcoming Release 1.5.0
+# Upcoming Release 1.6.0
+
+# 1.5.0
 ## Major features and improvements
+* Added support for "llave" (key) transfers in RappiPay, including both incoming and outgoing transactions.
 
 ## Bug fixes and other changes
+* Improved description formatting for RappiPay transfers, including better handling of bank details and transaction direction.
 
 # 1.4.0
 ## Major features and improvements
