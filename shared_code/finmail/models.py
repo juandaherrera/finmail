@@ -59,6 +59,9 @@ class EmailPayload(BaseModel):
         description="The sender of the email", examples=["nreply@bank.com"]
     )
     html: str | None = Field(default=None, description="The HTML content of the email")
+    received_at: datetime | None = Field(
+        default=None, description="The timestamp when the email was received"
+    )
 
     # TODO @juandaherrera: define if this should be here
     def get_soup(self) -> BeautifulSoup:

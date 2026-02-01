@@ -1,0 +1,2 @@
+# Ignore HTML files used only as test fixtures / samples
+tests/**/*.html linguist-vendored

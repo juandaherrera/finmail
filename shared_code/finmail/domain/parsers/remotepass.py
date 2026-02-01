@@ -50,7 +50,13 @@ class RemotePassParser(Parser):
         normalized_html = normalize(soup.get_text(" ", strip=True) or "")
         return normalized_html is not None and "remotepass" in normalized_html
 
-    def parse(self, sender: str, subject: str, soup: BeautifulSoup) -> Transaction:  # noqa: ARG002
+    def parse(
+        self,
+        sender: str,  # noqa: ARG002
+        subject: str,
+        soup: BeautifulSoup,
+        received_at: datetime | None = None,
+    ) -> Transaction:
         """
         Parse RemotePass transaction email into a Transaction object.
 
@@ -65,32 +71,48 @@ class RemotePassParser(Parser):
             Email subject line.
         soup : BeautifulSoup
             Parsed HTML content of the email body.
+        received_at : datetime | None
+            Timestamp when the email was received.
 
         Returns
         -------
         Transaction
-            A Transaction object containing:
-            - pocket: "RemotePass Cards"
-            - date_local: Transaction datetime converted from UTC to local timezone
-            - amount: Negative float representing the payment amount
-            - currency: Currency code (USD, EUR, COP, or GBP)
-            - merchant: Name of the merchant where payment was made
-            - description: Formatted description including merchant name
-
-        Raises
-        ------
-        ValueError
-            If the email text does not match the expected RemotePass payment
-            format or if transaction data cannot be extracted.
-
-        Notes
-        -----
-        The parser expects email text matching the pattern:
-        "payment of {amount} {currency} at {merchant} on {date} at {time} UTC"
-
-        All times are converted from UTC to the local timezone defined in TZ.
-        Amount is stored as negative to represent an expense.
+            A Transaction object containing the extracted details.
         """
+        if "payment received" in (subject or "").lower():
+            return self._parse_payment(soup, received_at)
+
+        return self._parse_withdrawal(soup)
+
+    def _parse_payment(
+        self, soup: BeautifulSoup, received_at: datetime | None
+    ) -> Transaction:
+        text = soup.get_text(" ", strip=True)
+        # Search for "Payment Amount: $250"
+        pattern = re.compile(r"Payment\s+Amount:\s*\$([\d\.,]+)", re.IGNORECASE)
+        match = pattern.search(text)
+
+        if not match:
+            logger.warning("RemotePassParser: could not extract payment amount")
+            raise ValueError("Could not extract payment data from email")
+
+        amount_str = match.group(1)
+        amount = float_from_string(amount_str, thousand_sep=",", decimal_sep=".")
+
+        # Payment emails don't seem to have a specific date in the body,
+        # so we use received_at if available, otherwise current time (as fallback)
+        date_local = received_at or datetime.now(tz=TZ)
+
+        return Transaction(
+            pocket="RemotePass",
+            date_local=date_local,
+            amount=amount,
+            currency=self.CURRENCY,
+            merchant="RemotePass",
+            description=f"Payment received. {settings.service_signature}.",
+        )
+
+    def _parse_withdrawal(self, soup: BeautifulSoup) -> Transaction:
         text = soup.get_text(" ", strip=True)
 
         # TODO @juandaherrera: remove currency from regex capture if not needed

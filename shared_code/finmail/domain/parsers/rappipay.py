@@ -1,6 +1,7 @@
 """RappiPay Parser."""
 
 import logging
+from datetime import datetime
 from typing import ClassVar
 
 from bs4 import BeautifulSoup
@@ -168,6 +169,7 @@ class RappiPayParser(Parser):
         sender: str,  # noqa: ARG002
         subject: str,  # noqa: ARG002
         soup: BeautifulSoup,
+        received_at: datetime | None = None,  # noqa: ARG002
     ) -> Transaction:
         """
         Parse a RappiPay transaction email and extracts relevant details.
@@ -180,6 +182,8 @@ class RappiPayParser(Parser):
             The email subject line.
         soup : BeautifulSoup
             The parsed HTML content of the email.
+        received_at : datetime | None
+            The timestamp when the email was received.
 
         Returns
         -------

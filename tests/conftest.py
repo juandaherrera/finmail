@@ -84,3 +84,13 @@ def fixture_rappipay_llave_transfer_out_soup() -> BeautifulSoup:
     soup = BeautifulSoup(html, "lxml")
     clean_html(soup)
     return soup
+
+
+@pytest.fixture(scope="session", name="remotepass_payment_soup")
+def fixture_remotepass_payment_soup() -> BeautifulSoup:
+    html = Path("tests/html_samples/remotepass_payment.html").read_text(
+        encoding="utf-8"
+    )
+    soup = BeautifulSoup(html, "lxml")
+    clean_html(soup)
+    return soup

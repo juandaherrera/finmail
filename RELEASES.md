@@ -1,4 +1,15 @@
-# Upcoming Release 1.6.0
+# Upcoming Release 1.7.0
+## Major features and improvements
+
+## Bug fixes and other changes
+
+# 1.6.0
+## Major features and improvements
+* Added support for RemotePass payment emails (incoming funds).
+* Updated `EmailPayload` and ingest pipeline to support `received_at` timestamp for accurate transaction timing when email body lacks date.
+
+## Bug fixes and other changes
+* Added `.gitattributes` file to ignore HTML files (just in the language count of GitHub) used as test fixtures.
 
 # 1.5.0
 ## Major features and improvements
@@ -34,7 +45,6 @@
 # 1.1.1
 ## Bug fixes and other changes
 * Added additional domain to RappiCard parser to handle emails from "noreply@rappicard.co".
-
 
 # 1.1.0
 ## Major features and improvements

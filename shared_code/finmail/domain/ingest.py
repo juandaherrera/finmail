@@ -62,6 +62,7 @@ def process_email(
         sender=payload.sender,
         subject=payload.subject,
         soup=soup,
+        received_at=payload.received_at,
     )
 
     google_sheets_client.insert_transaction(
