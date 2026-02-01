@@ -1,7 +1,12 @@
-# Upcoming Release 1.3.0
+# Upcoming Release 1.4.0
 ## Major features and improvements
 
 ## Bug fixes and other changes
+
+# 1.3.0
+## Major features and improvements
+* Added RappiPay parser to handle transaction emails from RappiPay.
+* Added date parsing utilities to handle Spanish date formats.
 
 # 1.2.1
 ## Bug fixes and other changes

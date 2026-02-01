@@ -2,12 +2,14 @@
 
 from .base import Parser
 from .rappicard import RappiCardParser
+from .rappipay import RappiPayParser
 from .registry import get_registry, register_parser
 from .remotepass import RemotePassParser
 
 __all__ = [
     "Parser",
     "RappiCardParser",
+    "RappiPayParser",
     "RemotePassParser",
     "get_registry",
     "register_parser",
