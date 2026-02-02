@@ -1,9 +1,10 @@
 """Finmail data models."""
 
-from datetime import datetime
+from datetime import UTC, datetime
 
 from bs4 import BeautifulSoup
-from pydantic import BaseModel, EmailStr, Field
+from dateutil import tz
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
 from shared_code.finmail.core.config import settings
 from shared_code.finmail.utils.html import clean_html
@@ -62,6 +63,36 @@ class EmailPayload(BaseModel):
     received_at: datetime | None = Field(
         default=None, description="The timestamp when the email was received"
     )
+
+    @field_validator("received_at", mode="before")
+    @classmethod
+    def normalize_received_at_timezone(cls, value: datetime | None) -> datetime | None:
+        """
+        Normalize received_at to default timezone.
+
+        If received_at has no timezone info, assume UTC.
+        Then convert to the default timezone.
+
+        Parameters
+        ----------
+        value : datetime | None
+            The received_at datetime value to normalize.
+
+        Returns
+        -------
+        datetime | None
+            The normalized received_at datetime value.
+        """
+        if value is None:
+            return None
+
+        # If naive (no timezone), assume UTC
+        if value.tzinfo is None:
+            value = value.replace(tzinfo=UTC)
+
+        # Convert to default timezone
+        default_tz = tz.gettz(settings.DEFAULT_TZ)
+        return value.astimezone(default_tz)
 
     # TODO @juandaherrera: define if this should be here
     def get_soup(self) -> BeautifulSoup:

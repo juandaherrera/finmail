@@ -13,7 +13,6 @@ graph LR;
     C -->|Yes| D[Extract Data];
     C -->|No| E[Log Error];
     D --> F[Upload to Google Sheets];
-    F --> G[Send Confirmation];
 ```
 
 ## Features
