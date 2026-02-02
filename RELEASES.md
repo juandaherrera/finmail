@@ -1,7 +1,22 @@
-# Upcoming Release 1.7.0
+<!-- # Upcoming Release 2.1.0 -->
+<!-- ## Major features and improvements -->
+
+<!-- ## Bug fixes and other changes -->
+
+# 2.0.0
 ## Major features and improvements
+* **Transaction Classification System**: Added automatic transaction classification based on configurable rules stored in Google Sheets.
+  * Rules are loaded from a configurable worksheet (default: "ClassificationRules") with 2-column format: `conditions | category`.
+  * Expression-based syntax supports single (`merchant:.*uber.*`) or multi-condition rules (`pocket:.*Rappi.* AND description:.*food.*`) with AND logic.
+  * Rules evaluate in order with first-match-wins logic and case-insensitive pattern matching.
+  * New `TransactionClassifier` class with lazy-loading and compiled regex patterns.
+  * Classification module organized as package: `classification_rules.py`, `rule_providers.py`, and `classifier.py`.
+  * Classifier initialized at module level in `core/classifier.py` for dependency injection.
+  * Classification can be enabled/disabled via `ENABLE_CLASSIFICATION` setting (default: enabled).
 
 ## Bug fixes and other changes
+* Added `pytest-mock` dependency for improved mocking in tests.
+* Added `GOOGLE_CLASSIFICATION_WORKSHEET_NAME` setting (default: "ClassificationRules").
 
 # 1.6.2
 ## Bug fixes and other changes

@@ -12,14 +12,57 @@ graph LR;
     B --> C{Is parsable?};
     C -->|Yes| D[Extract Data];
     C -->|No| E[Log Error];
-    D --> F[Upload to Google Sheets];
+    D --> F[Classify Transaction];
+    F --> G[Upload to Google Sheets];
 ```
 
 ## Features
 
 - **Email Processing**: Extracts relevant financial data from incoming emails.
+- **Automatic Classification**: Categorizes transactions based on configurable rules stored in Google Sheets.
 - **Azure Functions**: Leverages serverless architecture for scalability.
 - **Google Sheets Integration**: Uploads processed data to Google Sheets for easy access and analysis.
+
+## Google Sheets Setup
+
+Finmail uses Google Sheets to store both transaction data and classification rules. To set up your spreadsheet:
+
+### 1. Transactions Worksheet
+This is where all processed transactions will be uploaded. The worksheet should have columns for:
+- Date
+- Pocket
+- Category
+- Currency
+- Amount
+- Description
+- Notes
+- (And any other transaction fields)
+
+### 2. Classification Rules Worksheet
+Create a worksheet named `Classification Rules` (or customize via `GOOGLE_CLASSIFICATION_WORKSHEET_NAME` setting) to automatically categorize transactions. This allows Finmail to intelligently assign categories to transactions based on patterns you define.
+
+The worksheet should have **2 columns**:
+
+| conditions | category |
+|---|---|
+| merchant:.*uber.* | Transport |
+| pocket:.*Rappi.* AND description:.*food.* | Food |
+| merchant:.*amazon.* | Shopping |
+
+**How it works:**
+- **conditions**: Expression with field and regex pattern in format `field:pattern`. Multiple conditions can be combined with `AND` (all must match).
+- **category**: The category to assign when conditions match.
+- Rules are evaluated in order, and the first matching rule wins.
+- Pattern matching is case-insensitive.
+
+**Supported fields**: `merchant`, `description`, `pocket`, `amount`, `currency`, and other transaction fields.
+
+**Examples:**
+- Single condition: `merchant:.*uber.*` → Matches any transaction where merchant contains "uber"
+- Multiple conditions: `pocket:.*RappiPay.* AND amount:-.*` → Matches transactions from RappiPay pocket with negative amounts
+- Pattern with colon: `description:.*https?://.*` → Matches descriptions containing URLs
+
+**Note:** You can disable classification by setting `ENABLE_CLASSIFICATION=False` in your configuration.
 
 ## Getting Started
 To get started with Finmail you need to have installed [UV](https://docs.astral.sh/uv/) for package management. Once you have UV installed, follow these steps:
