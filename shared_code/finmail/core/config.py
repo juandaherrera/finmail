@@ -18,6 +18,10 @@ class Settings(BaseSettings):
     # Google Sheets
     GOOGLE_SPREADSHEET_IDENTIFIER: str
     GOOGLE_WORKSHEET_NAME: str = "Transactions"
+    GOOGLE_CLASSIFICATION_WORKSHEET_NAME: str = "ClassificationRules"
+
+    # Classification
+    ENABLE_CLASSIFICATION: bool = True
 
     # GCP
     GOOGLE_JSON_KEY: dict | str

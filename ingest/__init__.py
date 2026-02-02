@@ -4,6 +4,8 @@ import json
 
 import azure.functions as func
 
+from shared_code.finmail.core.classifier import transaction_classifier
+from shared_code.finmail.core.config import settings
 from shared_code.finmail.core.google_client import google_sheets_client
 from shared_code.finmail.domain.ingest import process_email
 from shared_code.finmail.models import EmailPayload, Transaction
@@ -41,7 +43,9 @@ def main(req: func.HttpRequest) -> func.HttpResponse:  # noqa: D103
         return func.HttpResponse(f"Validation error: {e}", status_code=422)
 
     processed = process_email(
-        payload=payload, google_sheets_client=google_sheets_client
+        payload=payload,
+        google_sheets_client=google_sheets_client,
+        classifier=transaction_classifier if settings.ENABLE_CLASSIFICATION else None,
     )
 
     return _get_response(transaction=processed, payload=payload)
