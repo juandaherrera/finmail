@@ -64,7 +64,7 @@ class EmailPayload(BaseModel):
         default=None, description="The timestamp when the email was received"
     )
 
-    @field_validator("received_at", mode="before")
+    @field_validator("received_at", mode="after")
     @classmethod
     def normalize_received_at_timezone(cls, value: datetime | None) -> datetime | None:
         """

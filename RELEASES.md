@@ -3,6 +3,10 @@
 
 ## Bug fixes and other changes
 
+# 1.6.2
+## Bug fixes and other changes
+* Fixed validation error when `received_at` is provided as an ISO string format by changing validator mode from `before` to `after`.
+
 # 1.6.1
 ## Bug fixes and other changes
 * Added timezone normalization for `EmailPayload.received_at`: naive datetimes are assumed to be UTC, then all datetimes are converted to the default timezone (`America/Bogota`).

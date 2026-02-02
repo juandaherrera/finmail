@@ -145,6 +145,38 @@ def test_received_at_none_remains_none():
     assert payload.received_at is None
 
 
+def test_received_at_from_iso_string_converted_to_default_tz():
+    # Pydantic will parse ISO format strings to datetime
+    iso_string = "2026-02-01T12:00:00"
+    payload = EmailPayload(
+        subject="Test",
+        sender="test@example.com",
+        received_at=iso_string,
+    )
+
+    # String will be parsed as naive, treated as UTC, then converted to default TZ
+    default_tz = tz.gettz(settings.DEFAULT_TZ)
+    expected_dt = datetime(2026, 2, 1, 12, 0, 0, tzinfo=UTC).astimezone(default_tz)
+
+    assert payload.received_at == expected_dt
+    assert payload.received_at.tzinfo == expected_dt.tzinfo
+
+
+def test_received_at_from_iso_string_with_utc_converted_to_default_tz():
+    iso_string = "2026-02-01T12:00:00Z"
+    payload = EmailPayload(
+        subject="Test",
+        sender="test@example.com",
+        received_at=iso_string,
+    )
+
+    default_tz = tz.gettz(settings.DEFAULT_TZ)
+    expected_dt = datetime(2026, 2, 1, 12, 0, 0, tzinfo=UTC).astimezone(default_tz)
+
+    assert payload.received_at == expected_dt
+    assert payload.received_at.tzinfo == expected_dt.tzinfo
+
+
 def test_get_soup_with_html():
     html_content = "<html><body><p>Test</p></body></html>"
     payload = EmailPayload(
