@@ -3,6 +3,10 @@
 
 <!-- ## Bug fixes and other changes -->
 
+# 2.0.1
+## Bug fixes and other changes
+* Fixed `insert_transaction` in `GoogleSheetsClient` to not upload empty string to `global_amount` column.
+
 # 2.0.0
 ## Major features and improvements
 * **Transaction Classification System**: Added automatic transaction classification based on configurable rules stored in Google Sheets.

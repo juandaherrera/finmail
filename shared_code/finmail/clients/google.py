@@ -202,8 +202,6 @@ class GoogleSheetsClient:
             transaction.category,
             transaction.currency,
             transaction.amount,
-            # TODO @juandaherrera: we need to fix this blank column (it has a formula)
-            "",
             transaction.description,
         ]
         return self.append_row(spreadsheet_identifier, row_values, worksheet_name)

@@ -13,7 +13,7 @@ dev = [
 
 [project]
 name = "finmail"
-version = "2.0.0"
+version = "2.0.1"
 description = "Finmail is a financial email processing system built with Azure Functions. It processes transactional emails, extracts the relevant financial data, and uploads it to a Google Sheet."
 readme = "README.md"
 authors = [
